@@ -2,7 +2,7 @@
 package com.edu.notification_service.service;
 
 import com.edu.notification_service.dto.CertificateRequest;
-import com.edu.notification_service.domain.Certificate;
+import com.edu.notification_service.model.Certificate;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -2,8 +2,8 @@
 package com.edu.notification_service.dto;
 
 import lombok.Data;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class EmailRequest {
@@ -16,4 +16,3 @@ public class EmailRequest {
     private String body;
     private String attachment; // Optional
 }
-

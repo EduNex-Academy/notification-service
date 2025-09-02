@@ -22,6 +22,9 @@ public class Notification {
     @Lob
     private String metadataJson;
 
+    private String recipient;
+    private LocalDateTime timestamp;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -44,4 +47,8 @@ public class Notification {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getMetadataJson() { return metadataJson; }
     public void setMetadataJson(String metadataJson) { this.metadataJson = metadataJson; }
+    public String getRecipient() { return recipient; }
+    public void setRecipient(String recipient) { this.recipient = recipient; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

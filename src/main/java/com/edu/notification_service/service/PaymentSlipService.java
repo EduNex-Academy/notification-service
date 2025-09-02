@@ -2,7 +2,7 @@
 package com.edu.notification_service.service;
 
 import com.edu.notification_service.dto.PaymentSlipRequest;
-import com.edu.notification_service.domain.PaymentSlip;
+import com.edu.notification_service.model.PaymentSlip;
 import org.springframework.stereotype.Service;
 
 @Service

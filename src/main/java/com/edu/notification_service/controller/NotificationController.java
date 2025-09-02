@@ -1,8 +1,8 @@
 // src/main/java/com/edu/notification_service/controller/NotificationController.java
 package com.edu.notification_service.controller;
 
+import com.edu.notification_service.domain.Notification;
 import com.edu.notification_service.dto.NotificationRequest;
-import com.edu.notification_service.model.Notification;
 import com.edu.notification_service.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,4 +26,3 @@ public class NotificationController {
         return ResponseEntity.ok(notificationService.getAllNotifications());
     }
 }
-

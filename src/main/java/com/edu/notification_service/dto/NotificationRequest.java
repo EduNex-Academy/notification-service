@@ -3,8 +3,8 @@ package com.edu.notification_service.dto;
 
 import com.edu.notification_service.domain.NotificationType;
 import lombok.Data;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 public class NotificationRequest {
@@ -15,4 +15,3 @@ public class NotificationRequest {
     @NotNull
     private NotificationType type;
 }
-

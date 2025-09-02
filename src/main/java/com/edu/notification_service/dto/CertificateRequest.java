@@ -2,7 +2,7 @@
 package com.edu.notification_service.dto;
 
 import lombok.Data;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class CertificateRequest {
@@ -11,4 +11,3 @@ public class CertificateRequest {
     @NotBlank
     private String courseName;
 }
-
