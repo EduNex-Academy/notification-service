@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import java.io.File;
+
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -35,9 +37,18 @@ public class EmailService {
             helper.setSubject(request.getSubject());
             helper.setText(request.getBody(), true);
             // Attachments logic can be added here
+            if (request.getAttachment() != null) {
+                File file = new File(request.getAttachment());
+                if (file.exists()) {
+                    helper.addAttachment(file.getName(), file);
+                } else {
+                    throw new RuntimeException("Attachment file not found: " + request.getAttachment());
+                }
+            }
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email with attachment", e);
         }
     }
 }
+
