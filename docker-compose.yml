@@ -26,17 +26,32 @@ services:
       - "1025:1025"
       - "8025:8025"
 
+  postgres:
+    image: postgres:15
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: notificationdb
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: notification
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   notification-service:
     build: .
     ports:
-      - "8080:8080"
+      - "8082:8081"
     environment:
       SPRING_PROFILES_ACTIVE: default
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notificationdb
+      SPRING_DATASOURCE_USERNAME: notification
+      SPRING_DATASOURCE_PASSWORD: notification
     depends_on:
       - kafka
       - mailhog
+      - postgres
     volumes:
-      - ./generated-pdfs:/workspace/generated-pdfs
-    # Uncomment the next line if you want to use local code changes
-    # command: ./gradlew bootRun
+      - ./generated-pdfs:/app/generated-pdfs
 
+volumes:
+  pgdata:
