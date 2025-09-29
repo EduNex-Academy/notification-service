@@ -19,10 +19,18 @@ public class EmailService {
     public void sendEmail(EmailRequest request) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false);
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, request.getAttachment() != null);
             helper.setTo(request.getTo());
             helper.setSubject(request.getSubject());
             helper.setText(request.getBody(), true);
+
+            if (request.getAttachment() != null) {
+                File attachmentFile = new File(request.getAttachment());
+                if (attachmentFile.exists()) {
+                    helper.addAttachment(attachmentFile.getName(), attachmentFile);
+                }
+            }
+
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException("Failed to send email", e);
@@ -51,4 +59,3 @@ public class EmailService {
         }
     }
 }
-
