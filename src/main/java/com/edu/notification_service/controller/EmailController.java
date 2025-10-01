@@ -29,10 +29,6 @@ public class EmailController {
                     .body("Failed to send email: " + e.getMessage());
         }
     }
-    @PostMapping("/sendWithAttachment")
-    public ResponseEntity<String> sendEmailWithAttachment(@RequestBody EmailRequest request) {
-        emailService.sendEmailWithAttachment(request);
-        return ResponseEntity.ok("Email with attachment sent successfully");
-    }
+
 }
 
