@@ -10,9 +10,16 @@ public class EmailRequest {
     @Email
     @NotBlank
     private String to;
+
     @NotBlank
     private String subject;
+
     @NotBlank
     private String body;
+
     private String attachment; // Optional
+
+    public String getRecipient() {
+        return to;
+    }
 }

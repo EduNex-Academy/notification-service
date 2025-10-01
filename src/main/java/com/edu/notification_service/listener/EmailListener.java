@@ -8,11 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class NotificationListener {
+public class EmailListener {
     private final EmailService emailService;
 
-    @KafkaListener(topics = "notification-topic", groupId = "notification-group")
+    @KafkaListener(topics = "email-topic", groupId = "email-group")
     public void handleNotification(EmailRequest emailRequest) {
+
         emailService.sendEmail(emailRequest);
     }
 }

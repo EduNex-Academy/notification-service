@@ -3,8 +3,10 @@ package com.edu.notification_service.service;
 
 import com.edu.notification_service.dto.NotificationRequest;
 import com.edu.notification_service.domain.Notification;
+import com.edu.notification_service.domain.NotificationType;
 import com.edu.notification_service.repository.NotificationRepository;
-import com.edu.notification_service.model.EmailDetails;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -12,65 +14,35 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
     private static final Logger logger = LoggerFactory.getLogger(NotificationService.class);
 
     private final NotificationRepository notificationRepository;
-    private final EmailService emailService;
     private final SimpMessagingTemplate webSocketTemplate;
 
-    public NotificationService(NotificationRepository notificationRepository,
-                             EmailService emailService,
-                             SimpMessagingTemplate webSocketTemplate) {
-        this.notificationRepository = notificationRepository;
-        this.emailService = emailService;
-        this.webSocketTemplate = webSocketTemplate;
-    }
+    public Notification sendNotification(@Valid NotificationRequest request) {
+        logger.info("Processing notification request for user: {}, type: {}", request.getUserId(), request.getType());
 
-    public Notification processNotification(NotificationRequest request) {
-        logger.info("Processing notification of type: {}", request.getType());
-
+        // Create and save notification
         Notification notification = createNotification(request);
+        notification = notificationRepository.save(notification);
+        logger.info("Notification saved with ID: {}", notification.getId());
 
-        // Handle notification based on type
-        switch (request.getType()) {
-            case EMAIL:
-                sendEmailNotification(request);
-                break;
-            case PUSH:
-                sendPushNotification(request);
-                break;
-            default:
-                logger.warn("Unsupported notification type: {}", request.getType());
+        // Send push notification if type is PUSH
+        if (request.getType() == NotificationType.COURSE_ENROLLMENT
+                || request.getType() == NotificationType.PAYMENT_SUCCESS
+                || request.getType() == NotificationType.SUBSCRIPTION_RENEWAL) {
+            sendPushNotification(notification);
         }
 
-        return notificationRepository.save(notification);
+        return notification;
     }
 
-    public void processEmailNotification(NotificationRequest request) {
-        EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setRecipient(request.getRecipient());
-        emailDetails.setSubject(request.getTitle());
-        emailDetails.setBody(request.getMessage());
-        emailService.sendEmail(emailDetails);
-
-        // Save notification record
-        Notification notification = createNotification(request);
-        notificationRepository.save(notification);
-    }
-
-    private void sendPushNotification(NotificationRequest request) {
-        String destination = "/topic/notifications/" + request.getUserId();
-        webSocketTemplate.convertAndSend(destination, request);
-        logger.info("Push notification sent to {}", destination);
-    }
-
-    private void sendEmailNotification(NotificationRequest request) {
-        EmailDetails emailDetails = new EmailDetails();
-        emailDetails.setRecipient(request.getRecipient());
-        emailDetails.setSubject(request.getTitle());
-        emailDetails.setBody(request.getMessage());
-        emailService.sendEmail(emailDetails);
+    private void sendPushNotification(Notification notification) {
+        String destination = "/topic/notifications/" + notification.getUserId();
+        webSocketTemplate.convertAndSend(destination, notification);
+        logger.info("Push notification sent to {} for user: {}", destination, notification.getUserId());
     }
 
     private Notification createNotification(NotificationRequest request) {

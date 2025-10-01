@@ -1,7 +1,7 @@
 // src/main/java/com/edu/notification_service/service/EmailService.java
 package com.edu.notification_service.service;
 
-import com.edu.notification_service.model.EmailDetails;
+import com.edu.notification_service.dto.EmailRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,7 +21,7 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(EmailDetails details) {
+    public void sendEmail(EmailRequest details) {
         logger.info("Sending email to: {}", details.getRecipient());
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
