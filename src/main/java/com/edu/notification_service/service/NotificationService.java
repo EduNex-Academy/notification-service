@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -59,5 +60,21 @@ public class NotificationService {
 
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
+    }
+
+    public Notification saveNotification(Notification notification) {
+        if (notification == null) {
+            throw new IllegalArgumentException("Notification cannot be null");
+        }
+
+        // Set creation timestamp if not set
+        if (notification.getCreatedAt() == null) {
+            notification.setCreatedAt(LocalDateTime.now());
+        }
+
+        // No need to check for null since readFlag is a primitive boolean
+        // It will be false by default
+
+        return notificationRepository.save(notification);
     }
 }
