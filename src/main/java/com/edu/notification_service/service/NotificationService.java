@@ -1,9 +1,10 @@
 // src/main/java/com/edu/notification_service/service/NotificationService.java
 package com.edu.notification_service.service;
 
-import com.edu.notification_service.dto.NotificationRequest;
+import com.edu.notification_service.dto.SubscriptionEvent;
+import com.edu.notification_service.dto.AuthEvent;
+import com.edu.notification_service.dto.CourseEvent;
 import com.edu.notification_service.domain.Notification;
-import com.edu.notification_service.domain.NotificationType;
 import com.edu.notification_service.repository.NotificationRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,40 +23,38 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate webSocketTemplate;
 
-    public Notification sendNotification(@Valid NotificationRequest request) {
-        logger.info("Processing notification request for user: {}, type: {}", request.getUserId(), request.getType());
-
-        // Create and save notification
-        Notification notification = createNotification(request);
-        notification = notificationRepository.save(notification);
-        logger.info("Notification saved with ID: {}", notification.getId());
-
-        // Send push notification if type is PUSH
-        if (request.getType() == NotificationType.COURSE_ENROLLMENT
-                || request.getType() == NotificationType.PAYMENT_SUCCESS
-                || request.getType() == NotificationType.SUBSCRIPTION_RENEWAL) {
-            sendPushNotification(notification);
-        }
-
-        return notification;
+    // Handler for subscription events
+    public void handleSubscriptionEvent(SubscriptionEvent event) {
+        logger.info("Handling subscription event: {} for user: {}", event.getEventType(), event.getUserId());
+        String message = event.getMessage();
+        sendPushNotification(event.getUserId(), message);
     }
 
-    private void sendPushNotification(Notification notification) {
-        String destination = "/topic/notifications/" + notification.getUserId();
-        webSocketTemplate.convertAndSend(destination, notification);
-        logger.info("Push notification sent to {} for user: {}", destination, notification.getUserId());
+    // Handler for authentication events
+    public void handleAuthEvent(AuthEvent event) {
+        logger.info("Handling auth event: {} for user: {}", event.getActionType(), event.getUserId());
+        String message = event.getMessage();
+        sendPushNotification(event.getUserId(), message);
     }
 
-    private Notification createNotification(NotificationRequest request) {
+    // Handler for course events
+    public void handleCourseEvent(CourseEvent event) {
+        logger.info("Handling course event: {} for user: {}", event.getEventType(), event.getUserId());
+        String message = event.getMessage();
+        sendPushNotification(event.getUserId(), message);
+    }
+
+    // Common push notification logic
+    private void sendPushNotification(String userId, String message) {
         Notification notification = new Notification();
-        notification.setUserId(request.getUserId());
-        notification.setType(request.getType());
-        notification.setTitle(request.getTitle());
-        notification.setMessage(request.getMessage());
-        notification.setRecipient(request.getRecipient());
-        notification.setMetadataJson(request.getMetadata());
+        notification.setUserId(Long.valueOf(userId));
+        notification.setMessage(message);
         notification.setReadFlag(false);
-        return notification;
+        notification.setCreatedAt(LocalDateTime.now());
+        notification = notificationRepository.save(notification);
+        String destination = "/topic/notifications/" + userId;
+        webSocketTemplate.convertAndSend(destination, notification);
+        logger.info("Push notification sent to {} for user: {}", destination, userId);
     }
 
     public List<Notification> getAllNotifications() {
@@ -66,15 +65,9 @@ public class NotificationService {
         if (notification == null) {
             throw new IllegalArgumentException("Notification cannot be null");
         }
-
-        // Set creation timestamp if not set
         if (notification.getCreatedAt() == null) {
             notification.setCreatedAt(LocalDateTime.now());
         }
-
-        // No need to check for null since readFlag is a primitive boolean
-        // It will be false by default
-
         return notificationRepository.save(notification);
     }
 }

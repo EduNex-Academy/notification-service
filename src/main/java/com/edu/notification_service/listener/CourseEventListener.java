@@ -1,18 +1,13 @@
 package com.edu.notification_service.listener;
 
 import com.edu.notification_service.dto.CourseEvent;
-import com.edu.notification_service.domain.Notification;
 import com.edu.notification_service.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import java.time.LocalDateTime;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
 
 import jakarta.validation.Valid;
 
@@ -23,8 +18,6 @@ import jakarta.validation.Valid;
 public class CourseEventListener {
 
     private final NotificationService notificationService;
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "course-events-topic", groupId = "notification-group")
     public void handleCourseEvent(@Valid CourseEvent event) {
@@ -33,45 +26,20 @@ public class CourseEventListener {
             MDC.put("userId", event.getUserId());
             MDC.put("courseId", event.getCourseId());
 
-            log.info("📚 Received course event: {} for course {} and user {}",
+            log.info("\uD83D\uDCDA Received course event: {} for course {} and user {}",
                     event.getEventType(), event.getCourseName(), event.getUserId());
 
-            // Create notification from course event
-            Notification notification = new Notification();
-            notification.setUserId(Long.valueOf(event.getUserId()));
-            notification.setType(event.getNotificationType());
-            notification.setMessage(event.getMessage());
-            notification.setTitle(String.format("Course %s: %s", event.getEventType().toLowerCase(), event.getCourseName()));
-            notification.setCreatedAt(LocalDateTime.now());
-            notification.setReadFlag(false);
+            // Delegate to NotificationService
+            notificationService.handleCourseEvent(event);
 
-            // Add course metadata
-            try {
-                String metadata = objectMapper.writeValueAsString(
-                    Map.of("courseId", event.getCourseId(),
-                          "courseName", event.getCourseName(),
-                          "eventType", event.getEventType())
-                );
-                notification.setMetadataJson(metadata);
-            } catch (Exception e) {
-                log.warn("Failed to serialize course metadata", e);
-            }
-
-            notification = notificationService.saveNotification(notification);
-
-            // Send real-time notification via WebSocket
-            String destination = "/topic/notifications/" + event.getUserId();
-            messagingTemplate.convertAndSend(destination, notification);
-
-            if (event.getEventType().equals("COURSE_COMPLETED")) {
-                log.info("🎓 Course completion notification sent for user {} - Course: {}",
-                        event.getUserId(), event.getCourseName());
+            if (event.getNotificationType().toString().contains("ERROR") ||
+                event.getNotificationType().toString().contains("WARNING")) {
+                log.warn("\u26A0\uFE0F Course alert for user {}: {}", event.getUserId(), event.getEventType());
             } else {
-                log.info("✅ Successfully processed course event: {} for course {}",
-                        event.getEventType(), event.getCourseName());
+                log.info("\u2705 Successfully processed course event for user {}", event.getUserId());
             }
         } catch (Exception e) {
-            log.error("❌ Error processing course event: {}", e.getMessage(), e);
+            log.error("\u274C Error processing course event: {}", e.getMessage(), e);
             throw e; // Rethrow for Kafka retry
         } finally {
             MDC.clear();
