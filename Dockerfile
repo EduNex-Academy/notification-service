@@ -12,7 +12,8 @@ COPY gradle /app/gradle
 # Copy the code
 COPY src /app/src
 
-# Build the application
+# Build the applicationdocker rm notification-service
+
 RUN ./gradlew build --no-daemon -x test
 
 # For easy debugs
@@ -22,7 +23,7 @@ RUN ls -la build/libs/
 RUN find build/libs -name "*.jar" -exec cp {} app.jar \;
 
 # Expose port 8081
-EXPOSE 8081
+EXPOSE 8080
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
