@@ -1,5 +1,6 @@
 package com.edu.notification_service.config;
 
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,7 @@ public class MailConfig {
     private boolean debug;
 
     @Bean
-    public JavaMailSender javaMailSender() {
+    public JavaMailSenderImpl javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);
@@ -47,3 +48,4 @@ public class MailConfig {
         return mailSender;
     }
 }
+

@@ -7,22 +7,19 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * REST controller for retrieving notifications.
- * Note: Notification sending is handled through Kafka events instead of HTTP endpoints.
- */
-@RestController
-@RequestMapping("/api/notifications")
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+
+@Controller
 public class NotificationController {
-    private final NotificationService notificationService;
 
-    public NotificationController(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Notification>> getAllNotifications() {
-        List<Notification> notifications = notificationService.getAllNotifications();
-        return ResponseEntity.ok(notifications);
+    @MessageMapping("/sendNotification")
+    @SendTo("/topic/notifications")
+    public String broadcast(String message) {
+        System.out.println("Received message: " + message);
+        return "Server received: " + message;
     }
 }
+
+

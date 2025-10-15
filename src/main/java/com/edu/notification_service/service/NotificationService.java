@@ -39,9 +39,22 @@ public class NotificationService {
 
     // Handler for course events
     public void handleCourseEvent(CourseEvent event) {
-        logger.info("Handling course event: {} for user: {}", event.getEventType(), event.getUserId());
-        String message = event.getMessage();
+        logger.info("Handling course notification: {} for user: {}", event.getNotificationType(), event.getUserId());
+        String message = generateCourseMessage(event);
         sendPushNotification(event.getUserId(), message);
+    }
+
+    // Helper method to generate course notification message
+    private String generateCourseMessage(CourseEvent event) {
+        return switch (event.getNotificationType()) {
+            case COURSE_ENROLLMENT -> String.format("You have been enrolled in the course: %s", event.getCourseName());
+            case COURSE_COMPLETION -> String.format("Congratulations! You have completed the course: %s", event.getCourseName());
+            case LESSON_REMINDER -> String.format("Reminder for your course: %s", event.getCourseName());
+            case SYSTEM_ALERT -> String.format("System alert for course: %s", event.getCourseName());
+            case ERROR -> String.format("Error occurred in course: %s", event.getCourseName());
+            case WARNING -> String.format("Warning for course: %s", event.getCourseName());
+            default -> String.format("Course notification for %s: %s", event.getCourseName(), event.getNotificationType());
+        };
     }
 
     // Common push notification logic
