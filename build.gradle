@@ -40,6 +40,11 @@ dependencies {
 
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Test dependencies for Kafka and in-memory SMTP (GreenMail)
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testImplementation 'com.icegreen:greenmail-junit5:1.6.8'
+	testImplementation 'org.awaitility:awaitility:4.2.0'
 }
 
 tasks.named('test') {

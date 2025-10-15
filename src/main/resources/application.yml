@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: notification-service-kafka-1:9092
     consumer:
       group-id: notification-group
       auto-offset-reset: earliest
@@ -25,7 +25,7 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   level:
