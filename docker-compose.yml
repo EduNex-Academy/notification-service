@@ -37,21 +37,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  notification-service:
-    build: .
-    ports:
-      - "8082:8081"
-    environment:
-      SPRING_PROFILES_ACTIVE: default
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notificationdb
-      SPRING_DATASOURCE_USERNAME: notification
-      SPRING_DATASOURCE_PASSWORD: notification
-    depends_on:
-      - kafka
-      - mailhog
-      - postgres
-    volumes:
-      - ./generated-pdfs:/app/generated-pdfs
 
 volumes:
   pgdata:
