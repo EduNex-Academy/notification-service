@@ -95,6 +95,7 @@ public class EmailService {
 
             String template = switch (request.getNotificationType().toUpperCase()) {
                 case "SUBSCRIPTION_ACTIVATED" -> "emails/subscription-activated.html";
+                case "SUBSCRIPTION_CANCELLED" -> "emails/subscription-cancelled.html";
                 case "RENEWAL_REMINDER" -> "emails/subscription-renewal-reminder.html";
                 case "EXPIRY_ALERT" -> "emails/subscription-expiry-alert.html";
                 case "PAYMENT_FAILED" -> "emails/subscription-payment-failed.html";
@@ -103,6 +104,7 @@ public class EmailService {
 
             String subject = switch (request.getNotificationType().toUpperCase()) {
                 case "SUBSCRIPTION_ACTIVATED" -> "Subscription Activated Successfully";
+                case "SUBSCRIPTION_CANCELLED" -> "Subscription Cancelled";
                 case "RENEWAL_REMINDER" -> "Subscription Renewal Reminder";
                 case "EXPIRY_ALERT" -> "Subscription Expiry Alert";
                 case "PAYMENT_FAILED" -> "Subscription Payment Failed";

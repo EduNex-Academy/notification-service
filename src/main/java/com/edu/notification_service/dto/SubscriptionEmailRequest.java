@@ -14,5 +14,6 @@ public class SubscriptionEmailRequest {
     private String planDuration;
     private Double amount;
     private String expiryDate;
-    private String notificationType; // SUBSCRIPTION_ACTIVATED, RENEWAL_REMINDER, EXPIRY_ALERT, PAYMENT_FAILED
+    private String notificationType; // SUBSCRIPTION_ACTIVATED, SUBSCRIPTION_CANCELLED, RENEWAL_REMINDER,
+                                     // EXPIRY_ALERT, PAYMENT_FAILED
 }

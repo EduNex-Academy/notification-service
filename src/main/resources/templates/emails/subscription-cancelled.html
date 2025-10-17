@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subscription Cancelled</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #333; text-align: center;">Subscription Cancellation Notice</h2>
+        
+        <p>Dear <span th:text="${userName}">User</span>,</p>
+        
+        <p>We're sorry to see you go. Your subscription has been cancelled as requested.</p>
+        
+        <p>Subscription Details:</p>
+        <ul>
+            <li>Plan: <strong th:text="${planName}">Premium</strong></li>
+            <li>Cancellation Date: <strong th:text="${cancellationDate}">2025-10-17</strong></li>
+        </ul>
+        
+        <p>If you change your mind, you can reactivate your subscription at any time by visiting your account settings.</p>
+        
+        <p>Thank you for being a part of our community. We hope to see you again soon!</p>
+        
+        <div style="margin-top: 30px; text-align: center; color: #666;">
+            <p>Best regards,<br>EduNex Team</p>
+        </div>
+    </div>
+</body>
+</html>
