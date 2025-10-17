@@ -4,6 +4,7 @@ import com.edu.notification_service.dto.AuthEmailRequest;
 import com.edu.notification_service.dto.CourseEmailRequest;
 import com.edu.notification_service.dto.SubscriptionEmailRequest;
 import com.edu.notification_service.service.EmailService;
+import org.edunex.courseservice.event.CourseEmailEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,8 +17,16 @@ public class EmailListener {
     private final EmailService emailService;
 
     @KafkaListener(topics = "course-email-topic", groupId = "email-group")
-    public void handleCourseEmail(CourseEmailRequest emailRequest) {
-        log.info("📚 Received course email request for: {}", emailRequest.getTo());
+    public void handleCourseEmail(CourseEmailEvent event) {
+        log.info("📚 Received course email event for: {}", event.getTo());
+
+        CourseEmailRequest emailRequest = new CourseEmailRequest(
+                event.getTo(),
+                event.getCourseName(),
+                event.getStudentName(),
+        mapCourseNotificationType(event.getNotificationType())
+        );
+
         emailService.sendCourseEmail(emailRequest);
     }
 
@@ -31,5 +40,17 @@ public class EmailListener {
     public void handleSubscriptionEmail(SubscriptionEmailRequest emailRequest) {
         log.info("💳 Received subscription email request for: {}", emailRequest.getTo());
         emailService.sendSubscriptionEmail(emailRequest);
+    }
+
+    private String mapCourseNotificationType(String rawType) {
+        if (rawType == null) {
+            return "ENROLLMENT";
+        }
+        return switch (rawType.toUpperCase()) {
+            case "COURSE_ENROLLMENT", "ENROLLED" -> "ENROLLMENT";
+            case "COURSE_COMPLETION", "COMPLETED" -> "COMPLETION";
+            case "LESSON_REMINDER", "COURSE_REMINDER", "REMINDER" -> "REMINDER";
+            default -> "ENROLLMENT";
+        };
     }
 }

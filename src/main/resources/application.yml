@@ -1,6 +1,8 @@
 spring:
+  application:
+    name: notification-service
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       group-id: notification-group
       auto-offset-reset: earliest
@@ -17,14 +19,15 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:edunex.22cse@gmail.com}
+    password: ${MAIL_PASSWORD:lfkzzpbdwpaylzxg}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+        debug: false
 
 server:
   port: 8081

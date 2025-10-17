@@ -28,17 +28,21 @@ public class EmailService {
             context.setVariable("studentName", request.getStudentName());
             context.setVariable("courseName", request.getCourseName());
 
-            String template = switch (request.getNotificationType().toUpperCase()) {
-                case "ENROLLMENT" -> "emails/course-enrollment.html";
-                case "COMPLETION" -> "emails/course-completion.html";
-                case "REMINDER" -> "emails/course-reminder.html";
+            String normalizedType = request.getNotificationType() == null
+                    ? "ENROLLMENT"
+                    : request.getNotificationType().trim().toUpperCase();
+
+            String template = switch (normalizedType) {
+                case "ENROLLMENT", "COURSE_ENROLLMENT", "COURSE_ENROLLED" -> "emails/course-enrollment.html";
+                case "COMPLETION", "COURSE_COMPLETION" -> "emails/course-completion.html";
+                case "REMINDER", "COURSE_REMINDER", "LESSON_REMINDER" -> "emails/course-reminder.html";
                 default -> throw new IllegalArgumentException("Invalid course notification type");
             };
 
-            String subject = switch (request.getNotificationType().toUpperCase()) {
-                case "ENROLLMENT" -> "Welcome to " + request.getCourseName();
-                case "COMPLETION" -> "Congratulations on Completing " + request.getCourseName();
-                case "REMINDER" -> "Course Reminder: " + request.getCourseName();
+            String subject = switch (normalizedType) {
+                case "ENROLLMENT", "COURSE_ENROLLMENT", "COURSE_ENROLLED" -> "Welcome to " + request.getCourseName();
+                case "COMPLETION", "COURSE_COMPLETION" -> "Congratulations on Completing " + request.getCourseName();
+                case "REMINDER", "COURSE_REMINDER", "LESSON_REMINDER" -> "Course Reminder: " + request.getCourseName();
                 default -> "Course Notification";
             };
 
